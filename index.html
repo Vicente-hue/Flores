@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flores Creciendo — Demo</title>
+  <style>
+    :root{
+      --bg:#0b0b14;
+      --card:#101220;
+      --petal-1:#ff8c00; /* naranja */
+      --petal-2:#ffd700; /* amarillo */
+      --center:#5a3714; /* centro oscuro */
+      --stem:#1e8a3b;
+    }
+
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, sans-serif;background:radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 5%), var(--bg);color:#fff;}
+
+    .wrap{
+      max-width:1100px;
+      margin:24px auto;
+      padding:20px;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .scene{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent 40%);
+      border-radius:18px;
+      padding:40px 20px;
+      min-height:520px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    /* ground */
+    .ground{
+      position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(180deg,#052012,#042010);
+      box-shadow:inset 0 8px 30px rgba(0,0,0,0.6);
+    }
+
+    /* flower container */
+    .flowers{
+      position:relative;height:100%;width:100%;
+    }
+
+    /* single flower */
+    .flower{
+      --size:120px; /* tamaño total del contenido de la flor (ajusta) */
+      position:absolute;
+      bottom:110px; /* suelo */
+      transform-origin: 50% 100%;
+      transform: translateY(12px) scaleY(0);
+      transition: transform 1s cubic-bezier(.2,.8,.2,1);
+      display:flex;flex-direction:column;align-items:center;
+      pointer-events:none;
+    }
+
+    .flower.grow{
+      transform: translateY(0) scaleY(1);
+    }
+
+    .stem{
+      width:6px;height:140px;background:linear-gradient(180deg,var(--stem), #0b5f27);border-radius:6px;position:relative;z-index:1;transform-origin:bottom center;
+    }
+
+    .leaf{
+      position:absolute;left:-60px;bottom:30px;width:70px;height:40px;border-radius:40px 10px 40px 10px;transform:rotate(-25deg);background:linear-gradient(180deg,#2aa65b,#1b6b3b);}
+    .leaf.right{left:auto;right:-60px;transform:rotate(25deg);}
+
+    .head{
+      position:absolute;bottom:110px;display:grid;place-items:center;width:var(--size);height:var(--size);z-index:2;transform:translateY(10px);
+    }
+
+    /* create many petals using pseudo elements via child divs */
+    .petals{
+      position:relative;width:100%;height:100%;
+    }
+
+    .petal{
+      --w:48%; --h:48%; position:absolute;left:50%;top:50%;width:var(--w);height:var(--h);transform-origin:0% 50%;border-radius:60% 40% 50% 50% / 60% 40% 60% 40%;
+      background:conic-gradient(from 120deg, var(--petal-1), var(--petal-2));box-shadow:0 6px 10px rgba(0,0,0,0.25);
+    }
+
+    /* place 8 petals by rotation */
+    .petal.p1{transform: translate(-50%,-50%) rotate(0deg) translateX(30%);
+    }
+    .petal.p2{transform: translate(-50%,-50%) rotate(45deg) translateX(30%);} 
+    .petal.p3{transform: translate(-50%,-50%) rotate(90deg) translateX(30%);} 
+    .petal.p4{transform: translate(-50%,-50%) rotate(135deg) translateX(30%);} 
+    .petal.p5{transform: translate(-50%,-50%) rotate(180deg) translateX(30%);} 
+    .petal.p6{transform: translate(-50%,-50%) rotate(225deg) translateX(30%);} 
+    .petal.p7{transform: translate(-50%,-50%) rotate(270deg) translateX(30%);} 
+    .petal.p8{transform: translate(-50%,-50%) rotate(315deg) translateX(30%);} 
+
+    .center{
+      width:48%;height:48%;border-radius:50%;background:radial-gradient(circle at 35% 25%, rgba(0,0,0,0.15), transparent 10%), linear-gradient(180deg,var(--center), #3c2b17);display:grid;place-items:center;box-shadow:inset 0 -8px 18px rgba(0,0,0,0.4);
+    }
+
+    /* small seeds texture */
+    .center::after{
+      content:'';width:70%;height:70%;background-image:radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px);background-size:8px 8px;border-radius:50%;opacity:0.9;transform:scale(0.95);
+    }
+
+    /* control side panel */
+    .panel{
+      background:linear-gradient(180deg,#09101a,#071016);padding:18px;border-radius:12px;color:#d6e7ff;height:520px;overflow:auto;
+    }
+
+    .panel h2{margin:0 0 10px 0;font-size:18px}
+    .panel p{margin:6px 0 14px 0;color:#a8bcd8}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    .controls button{padding:8px 12px;border-radius:8px;border:0;background:#17314a;color:#fff;cursor:pointer}
+
+    footer{grid-column:1/-1;text-align:center;margin-top:10px;color:#9fb1cc}
+
+    @media (max-width:900px){
+      .wrap{grid-template-columns:1fr;}
+      .panel{height:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="scene">
+      <div class="flowers" id="flowers"></div>
+      <div class="ground"></div>
+    </div>
+
+    <aside class="panel">
+      <h2>Flores amarillas — Demo</h2>
+      <p>Este mini-proyecto crea flores que "crecen" desde el suelo. Puedes ajustar la cantidad, tamaño y velocidad.</p>
+
+      <div class="controls">
+        <button id="spawnBtn">Generar 7 flores</button>
+        <button id="clearBtn">Limpiar</button>
+        <label for="count">Cantidad:</label>
+        <input id="count" type="number" min="1" max="30" value="7" style="width:70px" />
+      </div>
+
+      <h3 style="margin-top:18px">Cómo usar</h3>
+      <ol>
+        <li>Haz click en "Generar 7 flores".</li>
+        <li>Cada flor aparece en una posición aleatoria y crece con una pequeña demora.</li>
+        <li>Puedes modificar colores en :root dentro del archivo HTML.</li>
+      </ol>
+
+      <p style="margin-top:24px;color:#98b6d8;font-size:13px">Desplegar en GitHub Pages: crea un repositorio, sube este archivo como <code>index.html</code> y activa Pages en la rama main.</p>
+    </aside>
+
+    <footer>Hecho con ❤️ — Copia el archivo y súbelo a GitHub.</footer>
+  </div>
+
+  <script>
+    const flowersEl = document.getElementById('flowers');
+    const spawnBtn = document.getElementById('spawnBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const countInput = document.getElementById('count');
+
+    function createFlower(opts={x:50, size:120, delay:0}){
+      const f = document.createElement('div');
+      f.className = 'flower';
+      f.style.left = opts.x + '%';
+      f.style.setProperty('--size', opts.size + 'px');
+
+      // head
+      const head = document.createElement('div'); head.className = 'head';
+      const petals = document.createElement('div'); petals.className='petals';
+      for(let i=1;i<=8;i++){
+        const p = document.createElement('div'); p.className = 'petal p'+i; petals.appendChild(p);
+      }
+      const center = document.createElement('div'); center.className='center';
+      head.appendChild(petals); head.appendChild(center);
+
+      // stem + leaves
+      const stem = document.createElement('div'); stem.className='stem';
+      const leafL = document.createElement('div'); leafL.className='leaf';
+      const leafR = document.createElement('div'); leafR.className='leaf right';
+      stem.appendChild(leafL); stem.appendChild(leafR);
+
+      f.appendChild(head); f.appendChild(stem);
+      flowersEl.appendChild(f);
+
+      // staggered grow
+      setTimeout(()=>{
+        f.classList.add('grow');
+      }, opts.delay);
+
+      // little sway animation on finished grow
+      setTimeout(()=>{
+        f.style.transition = 'transform 0.6s cubic-bezier(.2,.8,.2,1)';
+        f.animate([
+          { transform: 'translateY(0) rotate(-2deg) scaleY(1)' },
+          { transform: 'translateY(0) rotate(2deg) scaleY(1)' },
+          { transform: 'translateY(0) rotate(-1deg) scaleY(1)' }
+        ],{duration:3000,iterations:Infinity, easing:'ease-in-out'});
+      }, opts.delay + 900);
+
+      return f;
+    }
+
+    function spawnFlowers(n=7){
+      const widths = [];
+      for(let i=0;i<n;i++){
+        // spread across 8%..92% to avoid edges
+        const x = 8 + Math.random()*84;
+        const size = 80 + Math.random()*80; // 80..160
+        const delay = i*220 + Math.random()*600;
+        createFlower({x: x, size: size, delay: delay});
+      }
+    }
+
+    spawnBtn.addEventListener('click', ()=>{
+      const n = Math.max(1, Math.min(30, parseInt(countInput.value)||7));
+      spawnFlowers(n);
+    });
+
+    clearBtn.addEventListener('click', ()=>{ flowersEl.innerHTML=''; });
+
+    // create some by default on load
+    document.addEventListener('DOMContentLoaded', ()=>{ spawnFlowers(7); });
+  </script>
+</body>
+</html>
