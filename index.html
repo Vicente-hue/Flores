@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Ti ❤️</title>
+    <title>Para mi amor ❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -24,13 +24,14 @@
             min-height: 100vh;
             background: radial-gradient(circle, var(--bg-color) 0%, #cc6699 100%);
             font-family: 'Dancing Script', cursive;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .card {
             width: 90%;
             max-width: 400px;
-            height: 600px;
+            /* Se cambió height por min-height para evitar que el texto choque */
+            min-height: 650px; 
             background-color: var(--card-color);
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -38,23 +39,61 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding: 30px;
+            padding: 25px;
             box-sizing: border-box;
         }
 
+        .text-section { 
+            z-index: 10; 
+            color: var(--text-color); 
+            text-align: center;
+        }
+
+        .hidden-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .visible-text { opacity: 1; transform: translateY(0); }
+
+        h2 { font-size: 1.8rem; margin-bottom: 10px; }
+        p { font-size: 1.4rem; margin: 8px 0; }
+        
+        .counter-container {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            border-top: 1px dashed var(--text-color);
+            padding-top: 10px;
+        }
+
+        #counter {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--heart-color-3);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .final-message {
+            margin-top: 20px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--heart-color-3);
+        }
+
+        /* --- ÁREA DEL ÁRBOL AJUSTADA --- */
         .tree-area {
-            position: absolute;
-            bottom: 50px;
-            right: 10px;
-            width: 250px;
-            height: 350px;
+            position: relative;
+            margin: 20px auto 0;
+            width: 200px;
+            height: 220px;
         }
 
         .ground-line {
             position: absolute;
-            bottom: 50px;
-            left: 5%;
-            width: 90%;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             height: 2px;
             background-color: var(--text-color);
             opacity: 0.5;
@@ -64,22 +103,22 @@
             position: absolute;
             bottom: 0;
             left: 50%;
-            width: 20px;
+            width: 18px;
             height: 0;
             background-color: var(--trunk-color);
             transform: translateX(-50%);
-            border-radius: 5px;
+            border-radius: 4px;
             transition: height 2s ease-in-out;
         }
 
-        .trunk.grow { height: 150px; }
+        .trunk.grow { height: 100px; }
 
         .leaves-container {
             position: absolute;
             top: 0;
             left: 50%;
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 150px;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 1s ease-in;
@@ -88,69 +127,34 @@
 
         .leaf {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             background-color: var(--heart-color-1);
-            clip-path: path('M10,3.5 C10,1.5 8.5,0 6.5,0 S3,1.5 3,3.5 C3,5.5 10,15 10,15 S17,5.5 17,3.5 C17,1.5 15.5,0 13.5,0 S10,1.5 10,3.5 Z');
+            clip-path: path('M9,3 C9,1.5 7.5,0 6,0 S3,1.5 3,3 C3,5 9,13 9,13 S15,5 15,3 C15,1.5 13.5,0 12,0 S9,1.5 9,3 Z');
             transform: scale(0);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Animación de pétalos/hojas */
-        .leaf:nth-child(1)  { top: 80px; left: 90px; --d: 0.1s; background: var(--heart-color-2);}
-        .leaf:nth-child(2)  { top: 60px; left: 70px; --d: 0.2s; background: var(--heart-color-3);}
-        .leaf:nth-child(3)  { top: 70px; left: 110px; --d: 0.3s; }
-        .leaf:nth-child(4)  { top: 40px; left: 85px; --d: 0.4s; background: var(--heart-color-2);}
-        .leaf:nth-child(5)  { top: 50px; left: 130px; --d: 0.5s; }
-        .leaf:nth-child(6)  { top: 90px; left: 50px; --d: 0.6s; background: var(--heart-color-3);}
-        .leaf:nth-child(7)  { top: 20px; left: 100px; --d: 0.7s; }
-        .leaf:nth-child(8)  { top: 100px; left: 120px; --d: 0.8s; background: var(--heart-color-2);}
-        .leaf:nth-child(9)  { top: 30px; left: 60px; --d: 0.9s; }
-        .leaf:nth-child(10) { top: 110px; left: 80px; --d: 1.0s; background: var(--heart-color-3);}
-        .leaf:nth-child(11) { top: 5px; left: 95px; --d: 1.1s; }
-        .leaf:nth-child(12) { top: 120px; left: 140px; --d: 1.2s; background: var(--heart-color-2);}
-        .leaf:nth-child(13) { top: 75px; left: 30px; --d: 1.3s; }
-        .leaf:nth-child(14) { top: 25px; left: 145px; --d: 1.4s; background: var(--heart-color-3);}
-        .leaf:nth-child(15) { top: 130px; left: 60px; --d: 1.5s; }
+        /* Posiciones de los pétalos */
+        .leaf:nth-child(1)  { top: 60px; left: 80px; --d: 0.1s; background: var(--heart-color-2);}
+        .leaf:nth-child(2)  { top: 40px; left: 60px; --d: 0.2s; background: var(--heart-color-3);}
+        .leaf:nth-child(3)  { top: 50px; left: 100px; --d: 0.3s; }
+        .leaf:nth-child(4)  { top: 20px; left: 75px; --d: 0.4s; background: var(--heart-color-2);}
+        .leaf:nth-child(5)  { top: 30px; left: 120px; --d: 0.5s; }
+        .leaf:nth-child(6)  { top: 70px; left: 40px; --d: 0.6s; background: var(--heart-color-3);}
+        .leaf:nth-child(7)  { top: 10px; left: 90px; --d: 0.7s; }
+        .leaf:nth-child(8)  { top: 80px; left: 110px; --d: 0.8s; background: var(--heart-color-2);}
+        .leaf:nth-child(9)  { top: 20px; left: 50px; --d: 0.9s; }
+        .leaf:nth-child(10) { top: 90px; left: 70px; --d: 1.0s; background: var(--heart-color-3);}
+        .leaf:nth-child(11) { top: 5px; left: 75px; --d: 1.1s; }
+        .leaf:nth-child(12) { top: 95px; left: 130px; --d: 1.2s; background: var(--heart-color-2);}
+        .leaf:nth-child(13) { top: 65px; left: 20px; --d: 1.3s; }
+        .leaf:nth-child(14) { top: 15px; left: 130px; --d: 1.4s; background: var(--heart-color-3);}
+        .leaf:nth-child(15) { top: 100px; left: 50px; --d: 1.5s; }
 
         .leaves-container.show .leaf {
             transform: scale(1) rotate(var(--r, 0deg));
             transition-delay: var(--d);
-        }
-
-        .text-section { z-index: 10; color: var(--text-color); }
-
-        .hidden-text {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .visible-text { opacity: 1; transform: translateY(0); }
-
-        h2 { font-size: 1.8rem; margin-bottom: 15px; }
-        p { font-size: 1.4rem; margin: 10px 0; }
-        
-        .counter-container {
-            margin-top: 20px;
-            font-size: 1.3rem;
-            border-top: 1px dashed var(--text-color);
-            padding-top: 15px;
-        }
-
-        #counter {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--heart-color-3);
-            display: block;
-            margin-top: 5px;
-        }
-
-        .final-message {
-            margin-top: 30px;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--heart-color-3);
-            text-align: center;
         }
     </style>
 </head>
@@ -164,11 +168,9 @@
                 Mi amor por ti comenzó hace...
                 <span id="counter">Calculando...</span>
             </div>
-            <p id="phrase2" class="hidden-text" style="margin-top: 25px;">Cuanto más tiempo estoy contigo, más te amo.</p>
+            <p id="phrase2" class="hidden-text" style="margin-top: 15px;">Cuanto más tiempo estoy contigo, más te amo.</p>
             <p id="final" class="hidden-text final-message">— I Love You! —</p>
         </div>
-
-        <div class="ground-line"></div>
 
         <div class="tree-area">
             <div class="leaves-container" id="leaves">
@@ -182,6 +184,7 @@
                 <div class="leaf" style="--r: -22deg;"></div>
             </div>
             <div class="trunk" id="trunk"></div>
+            <div class="ground-line"></div>
         </div>
     </div>
 
@@ -207,20 +210,20 @@
         }
 
         function iniciarAnimacion() {
-            const elementos = [
+            const tiempos = [
                 { id: 'title', delay: 500 },
-                { id: 'trunk', delay: 1500, class: 'grow' },
-                { id: 'phrase1', delay: 3000 },
-                { id: 'leaves', delay: 3500, class: 'show' },
-                { id: 'counter-box', delay: 5500, callback: () => {
+                { id: 'phrase1', delay: 1500 },
+                { id: 'counter-box', delay: 2500, callback: () => {
                     actualizarContador();
                     setInterval(actualizarContador, 1000);
                 }},
-                { id: 'phrase2', delay: 8000 },
-                { id: 'final', delay: 10000 }
+                { id: 'phrase2', delay: 4000 },
+                { id: 'final', delay: 5500 },
+                { id: 'trunk', delay: 6500, class: 'grow' },
+                { id: 'leaves', delay: 7500, class: 'show' }
             ];
 
-            elementos.forEach(item => {
+            tiempos.forEach(item => {
                 setTimeout(() => {
                     const el = document.getElementById(item.id);
                     if (item.class) el.classList.add(item.class);
@@ -233,4 +236,4 @@
         window.onload = iniciarAnimacion;
     </script>
 </body>
-              </html>
+</html>
